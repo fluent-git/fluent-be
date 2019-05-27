@@ -34,16 +34,7 @@ sqlite> .tables
 ```
 
 
-# APIs
+# API Documentation
 
-### Base URL : localhost:8000
-
-## Login
-```
-
-```
-
-## Logout
-```
-
-```
+### localhost:8000/documentation
+![Fluent Back-End Swagger API Documentation](documentation/swagger.png)

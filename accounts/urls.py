@@ -4,6 +4,7 @@ from rest_framework_nested import routers
 
 from accounts import views
 
+
 user_router = routers.SimpleRouter()
 user_router.register('users', views.UserViewSet, base_name='users')
 
