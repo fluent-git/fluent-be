@@ -7,6 +7,13 @@ from rest_framework.response import Response
 
 from accounts.serializers import (
     UserSerializer,
+    ReviewSerializer,
+    ReportSerializer
+)
+
+from accounts.models import (
+    Review,
+    Report
 )
 
 
@@ -20,7 +27,8 @@ class LoginViewSet(viewsets.GenericViewSet):
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):
-        user = authenticate(username=request.data['username'], password=request.data['password'])
+        user = authenticate(
+            username=request.data['username'], password=request.data['password'])
         if not user:
             return Response({'message': 'Invalid username or password'})
 
@@ -36,3 +44,13 @@ class LogoutViewSet(viewsets.GenericViewSet):
         token, _ = Token.objects.get_or_create(user=request.user)
         token.delete()
         return Response({'message': 'OK'})
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+
+class ReportViewSet(viewsets.ModelViewSet):
+    queryset = Report.objects.all()
+    serializer_class = ReportSerializer
