@@ -47,10 +47,12 @@ class LogoutViewSet(viewsets.GenericViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
 
 class ReportViewSet(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Report.objects.all()
     serializer_class = ReportSerializer

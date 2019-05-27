@@ -15,10 +15,10 @@ logout_router = routers.SimpleRouter()
 logout_router.register('logout', views.LogoutViewSet, base_name='logout')
 
 review_router = routers.SimpleRouter()
-review_router.register('review', views.ReviewViewSet, base_name='review')
+review_router.register('reviews', views.ReviewViewSet, base_name='reviews')
 
 report_router = routers.SimpleRouter()
-report_router.register('report', views.ReportViewSet, base_name='report')
+report_router.register('reports', views.ReportViewSet, base_name='reports')
 
 urlpatterns = []
 urlpatterns += login_router.urls
