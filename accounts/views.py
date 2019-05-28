@@ -3,12 +3,14 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import mixins, permissions, viewsets
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from accounts.serializers import (
     UserSerializer,
+    RegisterSerializer,
+    ReportSerializer,
     ReviewSerializer,
-    ReportSerializer
 )
 
 from accounts.models import (
@@ -17,11 +19,18 @@ from accounts.models import (
 )
 
 
-class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    permission_classes = (permissions.IsAuthenticated,)
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = RegisterSerializer
 
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = (AllowAny,)
+        else:
+            self.permission_classes = (permissions.IsAuthenticated,)
+
+        return super(UserViewSet, self).get_permissions()
+    
 
 class LoginViewSet(viewsets.GenericViewSet):
     serializer_class = UserSerializer
