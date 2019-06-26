@@ -37,4 +37,4 @@ sqlite> .tables
 # API Documentation
 
 ### localhost:8000/documentation
-![Fluent Back-End Swagger API Documentation](documentation/swagger.png)
+<p align="center"> <img src="documentation/swagger.png" alt="Fluent Back-End Swagger API Documentation" width="250"/> </p>
