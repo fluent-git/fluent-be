@@ -1,0 +1,5 @@
+django = "*"
+djangorestframework = "*"
+django-rest-swagger = "*"
+drf-nested-routers = "*"
+django-rest-framework-nested = "*"
