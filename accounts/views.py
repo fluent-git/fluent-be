@@ -42,7 +42,7 @@ class LoginViewSet(viewsets.GenericViewSet):
             return Response({'message': 'Invalid username or password'})
 
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({'token': str(token), 'user': UserSerializer(user).data})
+        return Response({'message': 'OK', 'token': str(token), 'user': UserSerializer(user).data})
 
 
 class LogoutViewSet(viewsets.GenericViewSet):
