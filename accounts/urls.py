@@ -5,6 +5,9 @@ from rest_framework_nested import routers
 from accounts import views
 
 
+find_chat_router = routers.SimpleRouter()
+find_chat_router.register('find-chat', views.FindChatViewSet, base_name='find-chat')
+
 login_router = routers.SimpleRouter()
 login_router.register('login', views.LoginViewSet, base_name='login')
 
@@ -23,11 +26,9 @@ review_router.register('reviews', views.ReviewViewSet, base_name='reviews')
 user_router = routers.SimpleRouter()
 user_router.register('users', views.UserViewSet, base_name='users')
 
-urlpatterns = [
-    path('find-chat/', views.FindChatViewSet.as_view(), name='find-chat'),
-    path('cancel/', views.CancelFindChatViewSet.as_view(), name='cancel'),
-]
+urlpatterns = []
 
+urlpatterns += find_chat_router.urls
 urlpatterns += login_router.urls
 urlpatterns += logout_router.urls
 urlpatterns += profile_router.urls

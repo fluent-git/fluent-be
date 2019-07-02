@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import generics, mixins, permissions, viewsets
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from fluent.settings import CHAT_MAKING_QUEUE
@@ -22,10 +23,11 @@ from accounts.models import (
 )
 
 
-class FindChatViewSet(generics.CreateAPIView):
+class FindChatViewSet(viewsets.GenericViewSet):
     # permission_classes = (permissions.IsAuthenticated,)
 
-    def create(self, request, *args, **kwargs):
+    @action(methods=['post'], detail=False)
+    def start(self, request):
         topic = request.data['topic']
         user = User.objects.get(id=request.data['id'])
         user_profile = Profile.objects.get(user=user)
@@ -42,13 +44,12 @@ class FindChatViewSet(generics.CreateAPIView):
             "level": user_profile.level
         })
 
+        print(request.data)
+
         return Response({'message': 'OK'})
 
-
-class CancelFindChatViewSet(generics.CreateAPIView):
-    # permission_classes = (permissions.IsAuthenticated,)
-
-    def create(self, request, *args, **kwargs):
+    @action(methods=['post'], detail=False)
+    def cancel(self, request):
         # user_id = request.user.id // user this when using authorization token
         user_id = request.data['id']
         
@@ -58,6 +59,10 @@ class CancelFindChatViewSet(generics.CreateAPIView):
                 break
 
 
+        return Response({'message': 'OK'})
+    
+    @action(methods=['post'], detail=False)
+    def check(self, request):
         return Response({'message': 'OK'})
 
 
