@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from rest_framework import mixins, permissions, viewsets
+from rest_framework import generics, mixins, permissions, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from fluent.settings import CHAT_MAKING_QUEUE
 
 from accounts.serializers import (
     ProfileSerializer,
@@ -19,6 +20,27 @@ from accounts.models import (
     Review,
     Report
 )
+
+
+class FindChatViewSet(generics.CreateAPIView):
+    # permission_classes = (permissions.IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        topic = request.data['topic']
+        user_profile = Profile.objects.get(user=request.user)
+
+        for user in CHAT_MAKING_QUEUE:
+            if user['topic'] == topic and user['level'] == user_profile.level:
+                CHAT_MAKING_QUEUE.remove(user)
+                return Response({'message': 'Found partner to chat', 'id': user['user_id']})
+
+        CHAT_MAKING_QUEUE.append({
+            "user_id": user_profile.user.id,
+            "topic": topic,
+            "level": user_profile.level
+        })
+
+        return Response({'message': 'OK'})
 
 
 class ProfileViewSet(viewsets.ModelViewSet):

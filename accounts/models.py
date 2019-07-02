@@ -13,6 +13,9 @@ class Profile(models.Model):
 
     def get_email(self):
         return self.user.email
+    
+    def __str__(self):
+        return self.user.username + ' ' + self.user.email
 
 
 @receiver(post_save, sender=User)
