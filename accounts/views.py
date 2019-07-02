@@ -27,7 +27,9 @@ class FindChatViewSet(generics.CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         topic = request.data['topic']
-        user_profile = Profile.objects.get(user=request.user)
+        user = User.objects.get(id=request.data['id'])
+        user_profile = Profile.objects.get(user=user)
+        # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
 
         for user in CHAT_MAKING_QUEUE:
             if user['topic'] == topic and user['level'] == user_profile.level:
@@ -39,6 +41,22 @@ class FindChatViewSet(generics.CreateAPIView):
             "topic": topic,
             "level": user_profile.level
         })
+
+        return Response({'message': 'OK'})
+
+
+class CancelFindChatViewSet(generics.CreateAPIView):
+    # permission_classes = (permissions.IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        # user_id = request.user.id // user this when using authorization token
+        user_id = request.data['id']
+        
+        for user in CHAT_MAKING_QUEUE:
+            if user['user_id'] == user_id:
+                CHAT_MAKING_QUEUE.remove(user)
+                break
+
 
         return Response({'message': 'OK'})
 

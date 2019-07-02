@@ -25,6 +25,7 @@ user_router.register('users', views.UserViewSet, base_name='users')
 
 urlpatterns = [
     path('find-chat/', views.FindChatViewSet.as_view(), name='find-chat'),
+    path('cancel/', views.CancelFindChatViewSet.as_view(), name='cancel'),
 ]
 
 urlpatterns += login_router.urls
