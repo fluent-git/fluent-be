@@ -1,5 +1,11 @@
+<<<<<<< Updated upstream
 django
 djangorestframework
 django-rest-swagger
 drf-nested-routers
 django-rest-framework-nested
+=======
+django==2.2.1
+djangorestframework==3.9.4
+django-rest-swagger==2.2.0
+>>>>>>> Stashed changes
