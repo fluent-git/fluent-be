@@ -20,9 +20,13 @@ review_router.register('reviews', views.ReviewViewSet, base_name='reviews')
 report_router = routers.SimpleRouter()
 report_router.register('reports', views.ReportViewSet, base_name='reports')
 
+profile_router = routers.SimpleRouter()
+profile_router.register('profiles', views.ProfileViewSet, base_name='profiles')
+
 urlpatterns = []
 urlpatterns += login_router.urls
 urlpatterns += logout_router.urls
 urlpatterns += user_router.urls
 urlpatterns += review_router.urls
 urlpatterns += report_router.urls
+urlpatterns += profile_router.urls
