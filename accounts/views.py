@@ -7,6 +7,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from accounts.serializers import (
+    ProfileSerializer,
     UserSerializer,
     RegisterSerializer,
     ReportSerializer,
@@ -14,9 +15,16 @@ from accounts.serializers import (
 )
 
 from accounts.models import (
+    Profile,
     Review,
     Report
 )
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    # permission_classes = (permissions.IsAuthenticated,)
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
