@@ -36,5 +36,4 @@ sqlite> .tables
 
 # API Documentation
 
-### localhost:8000/documentation
-<p align="center"> <img src="documentation/swagger.png" alt="Fluent Back-End Swagger API Documentation" width="600"/> </p>
+### https://documenter.getpostman.com/view/4749669/S1TR6LLr?version=latest
