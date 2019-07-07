@@ -23,13 +23,14 @@ from accounts.models import (
 )
 
 
-class FindChatViewSet(viewsets.GenericViewSet):
+class QueueViewSet(viewsets.GenericViewSet):
+    # TODO adjust with peerjs server
     # permission_classes = (permissions.IsAuthenticated,)
 
     @action(methods=['post'], detail=False)
     def start(self, request):
         topic = request.data['topic']
-        user = User.objects.get(id=request.data['id'])
+        user = User.objects.get(id=request.data['user_id'])
         user_profile = Profile.objects.get(user=user)
         # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
 
@@ -51,7 +52,7 @@ class FindChatViewSet(viewsets.GenericViewSet):
     @action(methods=['post'], detail=False)
     def cancel(self, request):
         # user_id = request.user.id // user this when using authorization token
-        user_id = request.data['id']
+        user_id = request.data['user_id']
         
         for user in CHAT_MAKING_QUEUE:
             if user['user_id'] == user_id:

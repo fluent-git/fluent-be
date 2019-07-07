@@ -6,7 +6,7 @@ from accounts import views
 
 
 find_chat_router = routers.SimpleRouter()
-find_chat_router.register('find-chat', views.FindChatViewSet, base_name='find-chat')
+find_chat_router.register('queue', views.QueueViewSet, base_name='queue')
 
 login_router = routers.SimpleRouter()
 login_router.register('login', views.LoginViewSet, base_name='login')
