@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -42,3 +44,15 @@ class Review(models.Model):
     pacing = models.IntegerField(default=0)
     pronunciation = models.IntegerField(default=0)
     note = models.TextField(default='', blank=True)
+
+class TalkHistory(models.Model):
+    user1 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='talk_history1')
+    user2 = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='talk_history2')
+    topic = models.TextField(default='', blank=True)
+    start_time = models.DateTimeField(default=datetime.now(), blank=True)
+    end_time = models.DateTimeField(default=datetime.now(), blank=True)
+    
+    def get_talk_time(self):
+        return self.end_time - self.start_time
