@@ -13,6 +13,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ('user', 'name', 'level')
 
+
 class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -41,10 +42,11 @@ class UserSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = ('id', 'user', 'clarity', 'pacing', 'pronunciation', 'note')
+        fields = ('id', 'user', 'clarity', 'pacing',
+                  'pronunciation', 'note', 'talk_id')
 
 
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = ('id', 'user', 'reason', 'note')
+        fields = ('id', 'user', 'reason', 'note', 'talk_id')
