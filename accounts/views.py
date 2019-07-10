@@ -1,13 +1,13 @@
-from datetime import datetime
-
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.utils import timezone
 from rest_framework import generics, mixins, permissions, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+
 from fluent.settings import CHAT_MAKING_QUEUE
 
 from accounts.serializers import (
@@ -138,7 +138,7 @@ class TalkViewSet(viewsets.GenericViewSet):
     @action(methods=['post'], detail=False)
     def end(self, request):
         talk_history = TalkHistory.objects.get(id=request.data['talk_id'])
-        talk_history.end_time = datetime.now()
+        talk_history.end_time = timezone.now()
         talk_history.save()
 
         return Response({'message': 'OK'})

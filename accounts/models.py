@@ -1,9 +1,8 @@
-from datetime import datetime
-
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 class Profile(models.Model):
@@ -38,8 +37,8 @@ class TalkHistory(models.Model):
     user2 = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='talk_history2')
     topic = models.TextField(default='', blank=True)
-    start_time = models.DateTimeField(default=datetime.now(), blank=True)
-    end_time = models.DateTimeField(default=datetime.now(), blank=True)
+    start_time = models.DateTimeField(default=timezone.now, blank=True)
+    end_time = models.DateTimeField(default=timezone.now, blank=True)
     active = models.BooleanField(default=True)
 
     def get_talk_time(self):
