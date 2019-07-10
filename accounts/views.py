@@ -69,11 +69,13 @@ class QueueViewSet(viewsets.GenericViewSet):
         for queue in CHAT_MAKING_QUEUE:
             if queue['topic'] == topic and queue['level'] == user_profile.level:
                 CHAT_MAKING_QUEUE.remove(queue)
+                talk = TalkHistory.objects.create(user1=user, topic=topic)
                 return Response({
                     'message': 'Found partner to chat',
                     'user_id': queue['user_id'],
                     'peerjs_id': queue['peerjs_id'],
-                    'conversation_suggestion': ""
+                    'conversation_suggestion': "",
+                    'talk_id': talk.id 
                 })
     
         CHAT_MAKING_QUEUE.append({

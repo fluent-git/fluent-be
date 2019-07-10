@@ -36,7 +36,7 @@ class TalkHistory(models.Model):
     user1 = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='talk_history1')
     user2 = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='talk_history2')
+        User, on_delete=models.CASCADE, related_name='talk_history2', null=True)
     topic = models.TextField(default='', blank=True)
     start_time = models.DateTimeField(default=datetime.now(), blank=True)
     end_time = models.DateTimeField(default=datetime.now(), blank=True)
