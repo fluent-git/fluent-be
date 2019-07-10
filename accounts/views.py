@@ -62,14 +62,18 @@ class QueueViewSet(viewsets.GenericViewSet):
     @action(methods=['post'], detail=False)
     def start(self, request):
         topic = request.data['topic']
-        user = User.objects.get(id=request.data['user_id'])
-        user_profile = Profile.objects.get(user=user)
+        user1 = User.objects.get(id=request.data['user_id'])
+        user_profile = Profile.objects.get(user=user1)
         # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
 
         for queue in CHAT_MAKING_QUEUE:
             if queue['topic'] == topic and queue['level'] == user_profile.level:
                 CHAT_MAKING_QUEUE.remove(queue)
-                talk = TalkHistory.objects.create(user1=user, topic=topic)
+                
+                # TODO refactor this code below
+                user2 = User.objects.get(id=queue['user_id'])
+                talk = TalkHistory.objects.create(user1=user1, user2=user2, topic=topic)
+                
                 return Response({
                     'message': 'Found partner to chat',
                     'user_id': queue['user_id'],
@@ -121,18 +125,15 @@ class TalkViewSet(viewsets.GenericViewSet):
 
     @action(methods=['post'], detail=False)
     def start(self, request):
-        user1 = User.objects.get(id=request.data['user1_id'])
-        user2 = User.objects.get(id=request.data['user2_id'])
-
-        talk_history = TalkHistory.objects.create(
-            user1=user1,
-            user2=user2,
-            topic=request.data['topic']
-        )
-        talk_history.save()
-        print(talktalk_history_History.id)
-
-        return Response({'message': 'OK', 'talk_id': talk_History.id})
+        user = User.objects.get(id=request.data['user_id'])
+        talk_history = TalkHistory.objects.get(user2=user, active=True)
+        
+        return Response({
+            'message': 'OK',
+            'user_id': talk_history.user1.id,
+            'talk_id': talk_history.id,
+            'conversation_suggestion': ""
+        })
     
     @action(methods=['post'], detail=False)
     def end(self, request):
