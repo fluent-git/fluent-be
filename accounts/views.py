@@ -66,18 +66,24 @@ class QueueViewSet(viewsets.GenericViewSet):
         user_profile = Profile.objects.get(user=user)
         # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
 
-        for user in CHAT_MAKING_QUEUE:
-            if user['topic'] == topic and user['level'] == user_profile.level:
-                CHAT_MAKING_QUEUE.remove(user)
-                return Response({'message': 'Found partner to chat', 'id': user['user_id']})
-
+        for queue in CHAT_MAKING_QUEUE:
+            if queue['topic'] == topic and queue['level'] == user_profile.level:
+                CHAT_MAKING_QUEUE.remove(queue)
+                return Response({
+                    'message': 'Found partner to chat',
+                    'user_id': queue['user_id'],
+                    'peerjs_id': queue['peerjs_id'],
+                    'conversation_suggestion': ""
+                })
+    
         CHAT_MAKING_QUEUE.append({
             "user_id": user_profile.user.id,
             "topic": topic,
-            "level": user_profile.level
+            "level": user_profile.level,
+            "peerjs_id": request.data['peerjs_id']
         })
 
-        return Response({'message': 'OK'})
+        return Response({'message': 'Queuing'})
 
     @action(methods=['post'], detail=False)
     def cancel(self, request):
