@@ -70,7 +70,10 @@ class QueueViewSet(viewsets.GenericViewSet):
             if queue['topic'] == topic and queue['level'] == user_profile.level:
                 CHAT_MAKING_QUEUE.remove(queue)
                 
-                # TODO refactor this code below
+                '''
+                TODO refactor this code below
+                Function should not have complex bussiness logic
+                '''
                 user2 = User.objects.get(id=queue['user_id'])
                 talk = TalkHistory.objects.create(user1=user1, user2=user2, topic=topic)
                 
@@ -125,8 +128,13 @@ class TalkViewSet(viewsets.GenericViewSet):
 
     @action(methods=['post'], detail=False)
     def start(self, request):
-        user = User.objects.get(id=request.data['user_id'])
-        talk_history = TalkHistory.objects.get(user2=user, active=True)
+        user = request.data['user_id']
+        
+        '''
+        TODO refactor this code below
+        TalkHistory that has user2=user and active=True should not be more than one
+        '''
+        talk_history = TalkHistory.objects.filter(user2=user, active=True).latest('id')
         
         return Response({
             'message': 'OK',
@@ -139,6 +147,7 @@ class TalkViewSet(viewsets.GenericViewSet):
     def end(self, request):
         talk_history = TalkHistory.objects.get(id=request.data['talk_id'])
         talk_history.end_time = timezone.now()
+        talk_history.active = False
         talk_history.save()
 
         return Response({'message': 'OK'})
