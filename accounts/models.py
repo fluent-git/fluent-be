@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
+User._meta.get_field('email')._unique = True
 
 class Profile(models.Model):
     user = models.OneToOneField("auth.User", on_delete=models.CASCADE)
