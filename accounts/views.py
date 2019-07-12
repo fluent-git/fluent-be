@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.utils import timezone
 from rest_framework import generics, mixins, permissions, viewsets
 from rest_framework.authtoken.models import Token
@@ -12,10 +13,11 @@ from fluent.settings import CHAT_MAKING_QUEUE
 
 from accounts.serializers import (
     ProfileSerializer,
-    UserSerializer,
     RegisterSerializer,
     ReportSerializer,
     ReviewSerializer,
+    TalkHistorySerializer,
+    UserSerializer,
 )
 
 from accounts.models import (
@@ -151,6 +153,15 @@ class TalkViewSet(viewsets.GenericViewSet):
         talk_history.save()
 
         return Response({'message': 'OK'})
+
+    @action(methods=['post'], detail=False)
+    def recent_talk(self, request):
+        talk_history = TalkHistory.objects.filter(
+            Q(user1=request.data['user_id']) | Q(user2=request.data['user_id'])
+        )
+        
+        return Response(TalkHistorySerializer(talk_history, many=True).data)
+        
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

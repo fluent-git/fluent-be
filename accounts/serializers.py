@@ -3,19 +3,18 @@ from django.contrib.auth.models import User
 from accounts.models import (
     Profile,
     Review,
-    Report
+    Report,
+    TalkHistory
 )
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Profile
         fields = ('user', 'name', 'level')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = (
@@ -50,3 +49,13 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
         fields = ('id', 'user', 'reason', 'note', 'talk_id')
+
+class TalkHistorySerializer(serializers.ModelSerializer):
+    duration = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TalkHistory
+        fields = ('topic', 'start_time', 'end_time', 'duration')
+    
+    def get_duration(self, obj):
+        return obj.get_duration()

@@ -42,8 +42,8 @@ class TalkHistory(models.Model):
     end_time = models.DateTimeField(default=timezone.now, blank=True)
     active = models.BooleanField(default=True)
 
-    def get_talk_time(self):
-        return self.end_time - self.start_time
+    def get_duration(self):
+        return int((self.end_time - self.start_time).total_seconds())
 
 
 class Report(models.Model):
