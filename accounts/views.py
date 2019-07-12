@@ -56,6 +56,35 @@ class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
 
+    @action(methods=['post'], detail=False)
+    def summary(self, request):
+        talk_history = TalkHistory.objects.filter(
+            Q(user1=request.data['user_id']) | Q(user2=request.data['user_id']),
+            active=False
+        )
+
+        reviews = Review.objects.filter(user=request.data['user_id'])
+
+        if len(reviews) == 0:
+            return Response({
+                'talk_count': len(talk_history),
+                'reviews': 'No reviews yet'
+            })
+        else:
+            return Response({'asd':'as'})
+            clarity = pacing = pronunciation = 0
+            for review in reviews:
+                clarity += review.clarity
+                pacing += review.pacing
+                pronunciation += review.pronunciation
+
+            return Response({
+                'talk_count': len(talk_history),
+                'clarity': clarity / len(reviews),
+                'pacing': pacing / len(reviews),
+                'pronunciation': pronunciation / len(reviews)
+            })
+
 
 class QueueViewSet(viewsets.GenericViewSet):
     # TODO adjust with peerjs server
