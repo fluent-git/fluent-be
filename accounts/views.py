@@ -147,10 +147,10 @@ class QueueViewSet(viewsets.GenericViewSet):
     def print(self, request):
         return Response({'queue': CHAT_MAKING_QUEUE})
 
-    # @action(methods=['post'], detail=False)
-    # def reset(self, request):
-    #     CHAT_MAKING_QUEUE = []
-    #     return Response({'message': 'OK'})
+    @action(methods=['post'], detail=False)
+    def reset(self, request):
+        CHAT_MAKING_QUEUE = []
+        return Response({'message': 'OK'})
 
 
 class ReportViewSet(viewsets.ModelViewSet):
