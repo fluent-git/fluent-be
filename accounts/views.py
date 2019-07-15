@@ -100,7 +100,7 @@ class QueueViewSet(viewsets.GenericViewSet):
         for queue in CHAT_MAKING_QUEUE:
             if queue['user_id'] == user_profile.id:
                 CHAT_MAKING_QUEUE.remove(queue)
-            else if queue['topic'] == topic and queue['level'] == user_profile.level:
+            elif queue['topic'] == topic and queue['level'] == user_profile.level:
                 CHAT_MAKING_QUEUE.remove(queue)
                 
                 '''
@@ -146,6 +146,11 @@ class QueueViewSet(viewsets.GenericViewSet):
     @action(methods=['get'], detail=False)
     def print(self, request):
         return Response({'queue': CHAT_MAKING_QUEUE})
+
+    # @action(methods=['post'], detail=False)
+    # def reset(self, request):
+    #     CHAT_MAKING_QUEUE = []
+    #     return Response({'message': 'OK'})
 
 
 class ReportViewSet(viewsets.ModelViewSet):
