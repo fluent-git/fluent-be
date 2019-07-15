@@ -141,6 +141,10 @@ class QueueViewSet(viewsets.GenericViewSet):
     def check(self, request):
         return Response({'message': 'OK'})
 
+    @action(methods=['get'], detail=False)
+    def print(self, request):
+        return Response({'queue': CHAT_MAKING_QUEUE})
+
 
 class ReportViewSet(viewsets.ModelViewSet):
     # permission_classes = (permissions.IsAuthenticated,)
