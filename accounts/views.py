@@ -98,7 +98,9 @@ class QueueViewSet(viewsets.GenericViewSet):
         # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
 
         for queue in CHAT_MAKING_QUEUE:
-            if queue['topic'] == topic and queue['level'] == user_profile.level:
+            if queue['user_id'] == user_profile.id:
+                CHAT_MAKING_QUEUE.remove(queue)
+            else if queue['topic'] == topic and queue['level'] == user_profile.level:
                 CHAT_MAKING_QUEUE.remove(queue)
                 
                 '''
