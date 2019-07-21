@@ -29,7 +29,10 @@ user_router.register('users', views.UserViewSet, base_name='users')
 talk_router = routers.SimpleRouter()
 talk_router.register('talk', views.TalkViewSet, base_name='talk')
 
-urlpatterns = []
+
+urlpatterns = [
+    url(r'^analyze/$', views.Analyze.as_view(), name='analyze')
+]
 
 urlpatterns += queue_router.urls
 urlpatterns += login_router.urls

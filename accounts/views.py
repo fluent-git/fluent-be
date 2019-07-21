@@ -8,6 +8,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from accounts.analyze import analyze
 
 from fluent.settings import CHAT_MAKING_QUEUE
 
@@ -59,7 +61,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
     @action(methods=['post'], detail=False)
     def summary(self, request):
         talk_history = TalkHistory.objects.filter(
-            Q(user1=request.data['user_id']) | Q(user2=request.data['user_id']),
+            Q(user1=request.data['user_id']) | Q(
+                user2=request.data['user_id']),
             active=False
         )
 
@@ -71,7 +74,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 'reviews': 'No reviews yet'
             })
         else:
-            return Response({'asd':'as'})
+            return Response({'asd': 'as'})
             clarity = pacing = pronunciation = 0
             for review in reviews:
                 clarity += review.clarity
@@ -89,7 +92,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class QueueViewSet(viewsets.GenericViewSet):
     # TODO adjust with peerjs server
     # permission_classes = (permissions.IsAuthenticated,)
-    
+
     @action(methods=['post'], detail=False)
     def start(self, request):
         topic = request.data['topic']
@@ -102,22 +105,23 @@ class QueueViewSet(viewsets.GenericViewSet):
                 CHAT_MAKING_QUEUE.remove(queue)
             elif queue['topic'] == topic and queue['level'] == user_profile.level:
                 CHAT_MAKING_QUEUE.remove(queue)
-                
+
                 '''
                 TODO refactor this code below
                 Function should not have complex bussiness logic
                 '''
                 user2 = User.objects.get(id=queue['user_id'])
-                talk = TalkHistory.objects.create(user1=user1, user2=user2, topic=topic)
-                
+                talk = TalkHistory.objects.create(
+                    user1=user1, user2=user2, topic=topic)
+
                 return Response({
                     'message': 'Found partner to chat',
                     'user_id': queue['user_id'],
                     'peerjs_id': queue['peerjs_id'],
                     'conversation_suggestion': "",
-                    'talk_id': talk.id 
+                    'talk_id': talk.id
                 })
-    
+
         CHAT_MAKING_QUEUE.append({
             "user_id": user_profile.user.id,
             "topic": topic,
@@ -131,14 +135,14 @@ class QueueViewSet(viewsets.GenericViewSet):
     def cancel(self, request):
         # user_id = request.user.id // user this when using authorization token
         user_id = request.data['user_id']
-        
+
         for user in CHAT_MAKING_QUEUE:
             if user['user_id'] == user_id:
                 CHAT_MAKING_QUEUE.remove(user)
                 break
 
         return Response({'message': 'OK'})
-    
+
     @action(methods=['post'], detail=False)
     def check(self, request):
         return Response({'message': 'OK'})
@@ -171,20 +175,21 @@ class TalkViewSet(viewsets.GenericViewSet):
     @action(methods=['post'], detail=False)
     def start(self, request):
         user = request.data['user_id']
-        
+
         '''
         TODO refactor this code below
         TalkHistory that has user2=user and active=True should not be more than one
         '''
-        talk_history = TalkHistory.objects.filter(user2=user, active=True).latest('id')
-        
+        talk_history = TalkHistory.objects.filter(
+            user2=user, active=True).latest('id')
+
         return Response({
             'message': 'OK',
             'user_id': talk_history.user1.id,
             'talk_id': talk_history.id,
             'conversation_suggestion': ""
         })
-    
+
     @action(methods=['post'], detail=False)
     def end(self, request):
         talk_history = TalkHistory.objects.get(id=request.data['talk_id'])
@@ -199,9 +204,9 @@ class TalkViewSet(viewsets.GenericViewSet):
         talk_history = TalkHistory.objects.filter(
             Q(user1=request.data['user_id']) | Q(user2=request.data['user_id'])
         )
-        
+
         return Response(TalkHistorySerializer(talk_history, many=True).data)
-        
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -214,3 +219,12 @@ class UserViewSet(viewsets.ModelViewSet):
             self.permission_classes = (permissions.IsAuthenticated,)
 
         return super(UserViewSet, self).get_permissions()
+
+
+class Analyze(APIView):
+    def post(self, request, format='json'):
+        input = request.data['input_text']
+        source = request.data['source_text']
+        time = request.data['input_time']
+        expected_time = request.data['expected_time'] if 'expected_time' in request.data else 0
+        return Response(analyze(input, source, time, expected_time))
