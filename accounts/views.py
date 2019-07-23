@@ -74,7 +74,6 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 'reviews': 'No reviews yet'
             })
         else:
-            return Response({'asd': 'as'})
             clarity = pacing = pronunciation = 0
             for review in reviews:
                 clarity += review.clarity
