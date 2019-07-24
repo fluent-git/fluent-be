@@ -15,6 +15,7 @@ from fluent.settings import CHAT_MAKING_QUEUE
 
 from accounts.serializers import (
     ProfileSerializer,
+    QueueSerializer,
     RegisterSerializer,
     ReportSerializer,
     ReviewSerializer,
@@ -134,12 +135,13 @@ class QueueViewSet(viewsets.GenericViewSet):
 
     @action(methods=['post'], detail=False)
     def cancel(self, request):
+        queues = Queue.objects.all()
         # user_id = request.user.id // user this when using authorization token
         user_id = request.data['user_id']
 
-        for user in CHAT_MAKING_QUEUE:
-            if user['user_id'] == user_id:
-                CHAT_MAKING_QUEUE.remove(user)
+        for queue in queues:
+            if queue.user == user_id:
+                queue.delete()
                 break
 
         return Response({'message': 'OK'})
@@ -150,11 +152,16 @@ class QueueViewSet(viewsets.GenericViewSet):
 
     @action(methods=['get'], detail=False)
     def print(self, request):
-        return Response({'queue': CHAT_MAKING_QUEUE})
+        queues = Queue.objects.all()
+        return Response(QueueSerializer(queues, many=True).data)
 
     @action(methods=['post'], detail=False)
     def reset(self, request):
-        CHAT_MAKING_QUEUE = []
+        queues = Queue.objects.all()
+
+        for queue in queues:
+            queue.delete()
+
         return Response({'message': 'OK'})
 
 

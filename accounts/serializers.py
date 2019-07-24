@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from accounts.models import (
     Profile,
+    Queue,
     Review,
     Report,
     TalkHistory
@@ -12,6 +13,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ('user', 'name', 'level')
+
+
+class QueueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Queue
+        fields = ('id', 'user', 'peerjs_id', 'topic')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
