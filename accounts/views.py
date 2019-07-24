@@ -24,6 +24,7 @@ from accounts.serializers import (
 
 from accounts.models import (
     Profile,
+    Queue,
     Review,
     Report,
     TalkHistory,
@@ -97,36 +98,37 @@ class QueueViewSet(viewsets.GenericViewSet):
         topic = request.data['topic']
         user1 = User.objects.get(id=request.data['user_id'])
         user_profile = Profile.objects.get(user=user1)
+        queues = Queue.objects.filter(topic=topic)
         # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
 
-        for queue in CHAT_MAKING_QUEUE:
-            if queue['user_id'] == user_profile.id:
-                CHAT_MAKING_QUEUE.remove(queue)
-            elif queue['topic'] == topic and queue['level'] == user_profile.level:
-                CHAT_MAKING_QUEUE.remove(queue)
+        if len(queues) > 0:
+            for queue in queues:
+                if queue.user == user_profile.id:
+                    continue
 
                 '''
                 TODO refactor this code below
                 Function should not have complex bussiness logic
                 '''
-                user2 = User.objects.get(id=queue['user_id'])
+                user2 = User.objects.get(id=queue.user)
                 talk = TalkHistory.objects.create(
-                    user1=user1, user2=user2, topic=topic)
+                    user1=user1, user2=user2, topic=topic
+                )
+                queue.delete()
 
                 return Response({
                     'message': 'Found partner to chat',
-                    'user_id': queue['user_id'],
-                    'peerjs_id': queue['peerjs_id'],
+                    'user_id': queue.user,
+                    'peerjs_id': queue.peerjs_id,
                     'conversation_suggestion': "",
                     'talk_id': talk.id
                 })
-
-        CHAT_MAKING_QUEUE.append({
-            "user_id": user_profile.user.id,
-            "topic": topic,
-            "level": user_profile.level,
-            "peerjs_id": request.data['peerjs_id']
-        })
+        else:
+            queue = Queue.objects.create(
+                user=user_profile.user.id,
+                topic=topic,
+                peerjs_id=request.data['peerjs_id']
+            )
 
         return Response({'message': 'Queuing'})
 

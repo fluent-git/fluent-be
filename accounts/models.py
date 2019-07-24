@@ -66,7 +66,7 @@ class Review(models.Model):
         TalkHistory, on_delete=models.CASCADE, related_name='review_talk_id', default=None)
 
 class Queue(models.Model):
-    user = models.IntegerField(default=0)
+    user = models.IntegerField(default=0, unique=True)
     peerjs_id =models.TextField(default='')
     topic = models.TextField(default='')
     
