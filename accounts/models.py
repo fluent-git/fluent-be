@@ -64,3 +64,9 @@ class Review(models.Model):
     note = models.TextField(default='', blank=True)
     talk_id = models.ForeignKey(
         TalkHistory, on_delete=models.CASCADE, related_name='review_talk_id', default=None)
+
+class Queue(models.Model):
+    user = models.IntegerField(default=0)
+    peerjs_id =models.TextField(default='')
+    topic = models.TextField(default='')
+    
