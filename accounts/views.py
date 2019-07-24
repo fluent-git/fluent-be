@@ -93,7 +93,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class QueueViewSet(viewsets.GenericViewSet):
     # TODO adjust with peerjs server
     # permission_classes = (permissions.IsAuthenticated,)
-
+    queryset = Queue.objects.all()
+    
     @action(methods=['post'], detail=False)
     def start(self, request):
         topic = request.data['topic']
