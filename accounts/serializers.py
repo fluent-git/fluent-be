@@ -16,12 +16,6 @@ class OpenTimeSerializer(serializers.ModelSerializer):
         fields = ('start', 'end')
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ('user', 'name', 'level')
-
-
 class QueueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Queue
@@ -50,6 +44,14 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'email')
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+
+    class Meta:
+        model = Profile
+        fields = ('user', 'name', 'rating')
 
 
 class ReviewSerializer(serializers.ModelSerializer):

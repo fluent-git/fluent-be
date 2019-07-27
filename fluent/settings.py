@@ -24,6 +24,8 @@ SECRET_KEY = 'j47!d($yuxdmo5z@4ua=69e2=)&1=*1xurzrv$*q-z2l#oop=8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+# DJANGO_ENV = os.environ.get('DJANGO_ENV', 'local')
+# DEBUG = DJANGO_ENV != 'production'
 
 ALLOWED_HOSTS = []
 

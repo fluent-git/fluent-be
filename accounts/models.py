@@ -15,7 +15,7 @@ class OpenTime(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField("auth.User", on_delete=models.CASCADE)
     name = models.CharField(max_length=64, null=True)
-    level = models.IntegerField(null=True)
+    rating = models.IntegerField(default=0)
 
     def get_username(self):
         return self.user.username
@@ -25,17 +25,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username + ' ' + self.user.email
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
 
 
 class TalkHistory(models.Model):
