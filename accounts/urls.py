@@ -6,10 +6,10 @@ from accounts import views
 
 
 login_router = routers.SimpleRouter()
-login_router.register('login', views.LoginViewSet, base_name='login')
+login_router.register('login', views.LoginView, base_name='login')
 
 logout_router = routers.SimpleRouter()
-logout_router.register('logout', views.LogoutViewSet, base_name='logout')
+logout_router.register('logout', views.LogoutView, base_name='logout')
 
 opentime_router = routers.SimpleRouter()
 opentime_router.register(
@@ -20,6 +20,9 @@ profile_router.register('profiles', views.ProfileViewSet, base_name='profiles')
 
 queue_router = routers.SimpleRouter()
 queue_router.register('queue', views.QueueViewSet, base_name='queue')
+
+register_router = routers.SimpleRouter()
+register_router.register('register', views.RegisterView, base_name='register')
 
 report_router = routers.SimpleRouter()
 report_router.register('reports', views.ReportViewSet, base_name='reports')
@@ -38,11 +41,12 @@ urlpatterns = [
     url(r'^analyze/$', views.Analyze.as_view(), name='analyze')
 ]
 
-urlpatterns += queue_router.urls
 urlpatterns += login_router.urls
 urlpatterns += logout_router.urls
 urlpatterns += opentime_router.urls
 urlpatterns += profile_router.urls
+urlpatterns += queue_router.urls
+urlpatterns += register_router.urls
 urlpatterns += report_router.urls
 urlpatterns += review_router.urls
 urlpatterns += user_router.urls

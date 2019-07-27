@@ -19,7 +19,7 @@ class OpenTimeSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('user', 'name', 'level')
+        fields = ('user', 'name', 'rating')
 
 
 class QueueSerializer(serializers.ModelSerializer):
