@@ -70,7 +70,7 @@ class TalkHistorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TalkHistory
-        fields = ('topic', 'start_time', 'end_time', 'duration')
+        fields = ('topic', 'start_time', 'end_time', 'duration', 'id')
 
     def get_duration(self, obj):
         return obj.get_duration()
