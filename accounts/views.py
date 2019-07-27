@@ -21,6 +21,7 @@ from accounts.serializers import (
     ReviewSerializer,
     TalkHistorySerializer,
     UserSerializer,
+    OpenTimeSerializer
 )
 
 from accounts.models import (
@@ -29,6 +30,7 @@ from accounts.models import (
     Review,
     Report,
     TalkHistory,
+    OpenTime
 )
 
 
@@ -52,6 +54,19 @@ class LogoutViewSet(viewsets.GenericViewSet):
     def create(self, request, *args, **kwargs):
         token, _ = Token.objects.get_or_create(user=request.user)
         token.delete()
+        return Response({'message': 'OK'})
+
+
+class OpenTimeViewSet(viewsets.ModelViewSet):
+    # permission_classes = (permissions.IsAuthenticated,)
+    queryset = OpenTime.objects.all()
+    serializer_class = OpenTimeSerializer
+
+    def patch(self, request, pk=1):
+        opentime = OpenTime.objects.get(pk=pk)
+        opentime.start = request.data['start']
+        opentime.end = request.data['end']
+        opentime.save()
         return Response({'message': 'OK'})
 
 
@@ -94,7 +109,7 @@ class QueueViewSet(viewsets.GenericViewSet):
     # TODO adjust with peerjs server
     # permission_classes = (permissions.IsAuthenticated,)
     queryset = Queue.objects.all()
-    
+
     @action(methods=['post'], detail=False)
     def start(self, request):
         topic = request.data['topic']

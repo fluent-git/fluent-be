@@ -5,8 +5,15 @@ from accounts.models import (
     Queue,
     Review,
     Report,
-    TalkHistory
+    TalkHistory,
+    OpenTime
 )
+
+
+class OpenTimeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OpenTime
+        fields = ('start', 'end')
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -57,12 +64,13 @@ class ReportSerializer(serializers.ModelSerializer):
         model = Report
         fields = ('id', 'user', 'reason', 'note', 'talk_id')
 
+
 class TalkHistorySerializer(serializers.ModelSerializer):
     duration = serializers.SerializerMethodField()
 
     class Meta:
         model = TalkHistory
         fields = ('topic', 'start_time', 'end_time', 'duration')
-    
+
     def get_duration(self, obj):
         return obj.get_duration()

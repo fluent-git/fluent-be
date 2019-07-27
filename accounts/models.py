@@ -6,6 +6,12 @@ from django.utils import timezone
 
 User._meta.get_field('email')._unique = True
 
+
+class OpenTime(models.Model):
+    start = models.IntegerField(default=0)
+    end = models.IntegerField(default=24)
+
+
 class Profile(models.Model):
     user = models.OneToOneField("auth.User", on_delete=models.CASCADE)
     name = models.CharField(max_length=64, null=True)
@@ -65,8 +71,8 @@ class Review(models.Model):
     talk_id = models.ForeignKey(
         TalkHistory, on_delete=models.CASCADE, related_name='review_talk_id', default=None)
 
+
 class Queue(models.Model):
     user = models.IntegerField(default=0, unique=True)
-    peerjs_id =models.TextField(default='')
+    peerjs_id = models.TextField(default='')
     topic = models.TextField(default='')
-    

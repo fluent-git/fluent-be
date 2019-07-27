@@ -11,6 +11,10 @@ login_router.register('login', views.LoginViewSet, base_name='login')
 logout_router = routers.SimpleRouter()
 logout_router.register('logout', views.LogoutViewSet, base_name='logout')
 
+opentime_router = routers.SimpleRouter()
+opentime_router.register(
+    'opentime', views.OpenTimeViewSet, base_name='opentime')
+
 profile_router = routers.SimpleRouter()
 profile_router.register('profiles', views.ProfileViewSet, base_name='profiles')
 
@@ -37,6 +41,7 @@ urlpatterns = [
 urlpatterns += queue_router.urls
 urlpatterns += login_router.urls
 urlpatterns += logout_router.urls
+urlpatterns += opentime_router.urls
 urlpatterns += profile_router.urls
 urlpatterns += report_router.urls
 urlpatterns += review_router.urls
