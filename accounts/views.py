@@ -164,7 +164,25 @@ class QueueViewSet(viewsets.GenericViewSet):
 
     @action(methods=['post'], detail=False)
     def check(self, request):
-        return Response({'message': 'OK'})
+        opentime = OpenTime.objects.get(pk=1)
+        start = opentime.start
+        end = opentime.end
+        now = timezone.now().hour
+        topic = request.data['topic']
+
+        # TODO : UPDATE TOPIC VALIDATION
+        if topic == 'food':
+            message = 'ERR_TOPIC'
+        elif now >= start and now < end:
+            message = 'OK'
+        else:
+            message = 'ERR_TIME'
+
+        return Response({
+            'message': message,
+            'start': start,
+            'end': end
+        })
 
     @action(methods=['get'], detail=False)
     def print(self, request):
