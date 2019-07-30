@@ -36,6 +36,9 @@ user_router.register('users', views.UserViewSet, base_name='users')
 talk_router = routers.SimpleRouter()
 talk_router.register('talk', views.TalkViewSet, base_name='talk')
 
+topic_router = routers.SimpleRouter()
+topic_router.register('topic', views.TopicViewSet, base_name='topic')
+
 
 urlpatterns = [
     url(r'^analyze/$', views.Analyze.as_view(), name='analyze')
@@ -51,3 +54,4 @@ urlpatterns += report_router.urls
 urlpatterns += review_router.urls
 urlpatterns += user_router.urls
 urlpatterns += talk_router.urls
+urlpatterns += topic_router.urls

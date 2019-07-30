@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
+from django.http import JsonResponse
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
@@ -22,7 +23,9 @@ from accounts.serializers import (
     ReviewSerializer,
     TalkHistorySerializer,
     UserSerializer,
-    OpenTimeSerializer
+    OpenTimeSerializer,
+    TopicSerializer,
+    ConversationStarterSerializer
 )
 
 from accounts.models import (
@@ -31,7 +34,9 @@ from accounts.models import (
     Review,
     Report,
     TalkHistory,
-    OpenTime
+    OpenTime,
+    Topic,
+    ConversationStarter
 )
 
 
@@ -39,7 +44,7 @@ class RegisterView(viewsets.GenericViewSet):
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
-        
+
         if not self.valid(request.data):
             return Response({'message': 'Email or Username already exist'})
 
@@ -48,18 +53,19 @@ class RegisterView(viewsets.GenericViewSet):
             email=request.data['email'],
             password=request.data['password']
         )
-        
+
         profile = Profile.objects.create(
             user=user,
-            rating=request.data['level']*1000   
+            rating=request.data['level']*1000
         )
         profile.save()
-        
+
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
 
     def valid(self, user_data):
         user_from_email = User.objects.filter(email=user_data['email'])
-        user_from_username = User.objects.filter(username=user_data['username'])
+        user_from_username = User.objects.filter(
+            username=user_data['username'])
 
         return len(user_from_email) == 0 and len(user_from_username) == 0
 
@@ -139,8 +145,8 @@ class QueueViewSet(viewsets.GenericViewSet):
     # TODO adjust with peerjs server
     # permission_classes = (permissions.IsAuthenticated,)
     queryset = Queue.objects.all()
-    
-    @transaction.atomic    
+
+    @transaction.atomic
     @action(methods=['post'], detail=False)
     def start(self, request):
         topic = request.data['topic']
@@ -300,5 +306,31 @@ class Analyze(APIView):
         source = request.data['source_text']
         time = request.data['input_time']
         expected_time = request.data['expected_time'] if 'expected_time' in request.data else 0
-        
+
         return Response(analyze(input, source, time, expected_time))
+
+
+class TopicViewSet(viewsets.GenericViewSet):
+    queryset = Topic.objects.all()
+    serializer_class = TopicSerializer
+
+    def create(self, request):
+        name = request.data['name']
+        is_open = request.data['is_open']
+        topic = Topic.objects.create(
+            name=name,
+            is_open=is_open
+        )
+        topic.save()
+        return Response(TopicSerializer(topic).data, status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        results = self.get_queryset()
+        topics = []
+        for topic in results:
+            topics.append({
+                'id': topic.id,
+                'topic': topic.name,
+                'is_open': topic.is_open
+            })
+        return Response({'results': topics})
