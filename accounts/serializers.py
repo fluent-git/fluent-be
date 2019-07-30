@@ -6,7 +6,9 @@ from accounts.models import (
     Review,
     Report,
     TalkHistory,
-    OpenTime
+    OpenTime,
+    Topic,
+    ConversationStarter
 )
 
 
@@ -76,3 +78,18 @@ class TalkHistorySerializer(serializers.ModelSerializer):
 
     def get_duration(self, obj):
         return obj.get_duration()
+
+
+class ConversationStarterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConversationStarter
+        fields = ('text', 'topic')
+
+
+class TopicSerializer(serializers.ModelSerializer):
+    conversation_starters = ConversationStarterSerializer(
+        source='convstarter_topic', many=True)
+
+    class Meta:
+        model = Topic
+        fields = ('id', 'name', 'is_open', 'conversation_starters')

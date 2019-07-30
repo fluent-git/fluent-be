@@ -65,3 +65,14 @@ class Queue(models.Model):
     user = models.IntegerField(default=0, unique=True)
     peerjs_id = models.TextField(default='')
     topic = models.TextField(default='')
+
+
+class Topic(models.Model):
+    name = models.CharField(max_length=24, blank=False)
+    is_open = models.BooleanField(default=True)
+
+
+class ConversationStarter(models.Model):
+    text = models.CharField(max_length=100, default='')
+    topic = models.ForeignKey(
+        Topic, on_delete=models.CASCADE, related_name='convstarter_topic', default=None)
