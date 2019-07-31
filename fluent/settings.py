@@ -88,6 +88,12 @@ TEMPLATES = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+CORS_ORIGIN_WHITELIST = (
+    'google.com',
+    'fluent.id',
+    'api.fluent.id'
+)
+
 WSGI_APPLICATION = 'fluent.wsgi.application'
 
 
