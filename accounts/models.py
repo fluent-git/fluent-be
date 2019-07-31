@@ -73,6 +73,6 @@ class Topic(models.Model):
 
 
 class ConversationStarter(models.Model):
-    text = models.CharField(max_length=100, default='')
+    text = models.CharField(max_length=254, default='')
     topic = models.ForeignKey(
         Topic, on_delete=models.CASCADE, related_name='convstarter_topic', default=None)
