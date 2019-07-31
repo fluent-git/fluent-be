@@ -185,7 +185,6 @@ class QueueViewSet(viewsets.GenericViewSet):
                     'message': 'Found partner to chat',
                     'user_id': queue.user,
                     'peerjs_id': queue.peerjs_id,
-                    'conversation_suggestion': "",
                     'talk_id': talk.id
                 })
         else:
@@ -336,8 +335,10 @@ class TopicViewSet(viewsets.GenericViewSet):
             })
         return Response({'results': topics})
 
-    def retrieve(self, request, pk):
-        topic = TopicSerializer(Topic.objects.get(pk=pk)).data
+    @action(methods=['post'], detail=False)
+    def details(self, request):
+        topic_name = request.data['topic']
+        topic = TopicSerializer(Topic.objects.get(name=topic_name)).data
         conversation_starters = []
         for conversation_starter in topic['conversation_starters']:
             conversation_starters.append(conversation_starter['text'])
