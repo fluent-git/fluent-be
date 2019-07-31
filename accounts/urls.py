@@ -37,7 +37,10 @@ talk_router = routers.SimpleRouter()
 talk_router.register('talk', views.TalkViewSet, base_name='talk')
 
 topic_router = routers.SimpleRouter()
-topic_router.register('topic', views.TopicViewSet, base_name='topic')
+topic_router.register('topics', views.TopicViewSet, base_name='topic')
+
+conversation_starter_router = routers.SimpleRouter()
+    conversation_starter_router.register('conversation-starters', views.ConversationStarterViewSet, base_name='topic')
 
 
 urlpatterns = [
@@ -55,3 +58,4 @@ urlpatterns += review_router.urls
 urlpatterns += user_router.urls
 urlpatterns += talk_router.urls
 urlpatterns += topic_router.urls
+urlpatterns += conversation_starter_router.urls

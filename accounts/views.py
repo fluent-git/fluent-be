@@ -5,6 +5,7 @@ from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
@@ -68,6 +69,16 @@ class RegisterView(viewsets.GenericViewSet):
             username=user_data['username'])
 
         return len(user_from_email) == 0 and len(user_from_username) == 0
+
+
+class Analyze(APIView):
+    def post(self, request, format='json'):
+        input = request.data['input_text']
+        source = request.data['source_text']
+        time = request.data['input_time']
+        expected_time = request.data['expected_time'] if 'expected_time' in request.data else 0
+
+        return Response(analyze(input, source, time, expected_time))
 
 
 class LoginView(viewsets.GenericViewSet):
@@ -300,16 +311,6 @@ class UserViewSet(viewsets.ModelViewSet):
         return super(UserViewSet, self).get_permissions()
 
 
-class Analyze(APIView):
-    def post(self, request, format='json'):
-        input = request.data['input_text']
-        source = request.data['source_text']
-        time = request.data['input_time']
-        expected_time = request.data['expected_time'] if 'expected_time' in request.data else 0
-
-        return Response(analyze(input, source, time, expected_time))
-
-
 class TopicViewSet(viewsets.GenericViewSet):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
@@ -334,3 +335,39 @@ class TopicViewSet(viewsets.GenericViewSet):
                 'is_open': topic.is_open
             })
         return Response({'results': topics})
+
+    def retrieve(self, request, pk):
+        topic = TopicSerializer(Topic.objects.get(pk=pk)).data
+        conversation_starters = []
+        for conversation_starter in topic['conversation_starters']:
+            conversation_starters.append(conversation_starter['text'])
+        topic['conversation_starters'] = conversation_starters
+        return Response(topic)
+
+    def patch(self, request, pk):
+        topic = Topic.objects.get(pk=pk)
+        if 'name' in request.data:
+            topic.name = request.data['name']
+        if 'is_open' in request.data:
+            topic.name = request.data['is_open']
+        topic.save()
+        return Response({'message': 'OK'})
+
+
+class ConversationStarterViewSet(viewsets.ModelViewSet):
+    queryset = ConversationStarter.objects.all()
+    serializer_class = ConversationStarterSerializer
+
+    def create(self, request):
+        try:
+            topic = Topic.objects.get(name=request.data['topic']).id
+        except ObjectDoesNotExist:
+            return Response("Invalid Topic", status=status.HTTP_400_BAD_REQUEST)
+        request.data['topic'] = topic
+        return super().create(request)
+
+    def patch(self, request, pk):
+        conversation_starter = ConversationStarter.objects.get(pk=pk)
+        conversation_starter.text = request.data['text']
+        conversation_starter.save()
+        return Response({'message': 'OK'})
