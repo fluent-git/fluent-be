@@ -345,12 +345,29 @@ class TopicViewSet(viewsets.GenericViewSet):
         topic['conversation_starters'] = conversation_starters
         return Response(topic)
 
+    # TODO : Fix URLS to be able to get pk (pk not yet defined)
     def patch(self, request, pk):
         topic = Topic.objects.get(pk=pk)
         if 'name' in request.data:
             topic.name = request.data['name']
         if 'is_open' in request.data:
             topic.name = request.data['is_open']
+        topic.save()
+        return Response({'message': 'OK'})
+
+    @action(methods=['post'], detail=False)
+    def open(self, request):
+        topic_name = request.data['topic']
+        topic = Topic.objects.get(name=topic_name)
+        topic.is_open = True
+        topic.save()
+        return Response({'message': 'OK'})
+    
+    @action(methods=['post'], detail=False)
+    def close(self, request):
+        topic_name = request.data['topic']
+        topic = Topic.objects.get(name=topic_name)
+        topic.is_open = False
         topic.save()
         return Response({'message': 'OK'})
 
