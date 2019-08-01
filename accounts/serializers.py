@@ -93,3 +93,11 @@ class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = ('id', 'name', 'is_open', 'conversation_starters')
+
+
+class TalkDetailSerializer(serializers.ModelSerializer):
+    talk_id = TalkHistorySerializer()
+    class Meta:
+        model = Review
+        fields = ('clarity', 'pacing',
+                  'pronunciation', 'note', 'talk_id')
