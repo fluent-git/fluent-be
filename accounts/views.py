@@ -17,6 +17,7 @@ from accounts.analyze import analyze
 from fluent.settings import CHAT_MAKING_QUEUE
 
 from accounts.serializers import (
+    ConversationStarterSerializer,
     ProfileSerializer,
     QueueSerializer,
     RegisterSerializer,
@@ -25,8 +26,8 @@ from accounts.serializers import (
     TalkHistorySerializer,
     UserSerializer,
     OpenTimeSerializer,
+    TalkDetailSerializer,
     TopicSerializer,
-    ConversationStarterSerializer
 )
 
 from accounts.models import (
@@ -295,19 +296,15 @@ class TalkViewSet(viewsets.GenericViewSet):
         )
 
         return Response(TalkHistorySerializer(talk_history, many=True).data)
+    
+    @action(methods=['post'], detail=False)
+    def talk_detail(self, request):
+        review = Review.objects.get(
+            user=request.data['user_id'],
+            talk_id=request.data['talk_id'],
+        )
 
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            self.permission_classes = (AllowAny,)
-        else:
-            self.permission_classes = (permissions.IsAuthenticated,)
-
-        return super(UserViewSet, self).get_permissions()
+        return Response(TalkDetailSerializer(review).data)
 
 
 class TopicViewSet(viewsets.GenericViewSet):
@@ -322,6 +319,7 @@ class TopicViewSet(viewsets.GenericViewSet):
             is_open=is_open
         )
         topic.save()
+
         return Response(TopicSerializer(topic).data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
@@ -333,16 +331,19 @@ class TopicViewSet(viewsets.GenericViewSet):
                 'topic': topic.name,
                 'is_open': topic.is_open
             })
+
         return Response({'results': topics})
 
     @action(methods=['post'], detail=False)
     def details(self, request):
         topic_name = request.data['topic']
         topic = TopicSerializer(Topic.objects.get(name=topic_name)).data
+        
         conversation_starters = []
         for conversation_starter in topic['conversation_starters']:
             conversation_starters.append(conversation_starter['text'])
         topic['conversation_starters'] = conversation_starters
+        
         return Response(topic)
 
     def patch(self, request, pk):
@@ -352,6 +353,7 @@ class TopicViewSet(viewsets.GenericViewSet):
         if 'is_open' in request.data:
             topic.name = request.data['is_open']
         topic.save()
+        
         return Response({'message': 'OK'})
 
 
@@ -365,10 +367,12 @@ class ConversationStarterViewSet(viewsets.ModelViewSet):
         except ObjectDoesNotExist:
             return Response("Invalid Topic", status=status.HTTP_400_BAD_REQUEST)
         request.data['topic'] = topic
+        
         return super().create(request)
 
     def patch(self, request, pk):
         conversation_starter = ConversationStarter.objects.get(pk=pk)
         conversation_starter.text = request.data['text']
         conversation_starter.save()
+        
         return Response({'message': 'OK'})

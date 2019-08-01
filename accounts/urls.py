@@ -30,9 +30,6 @@ report_router.register('reports', views.ReportViewSet, base_name='reports')
 review_router = routers.SimpleRouter()
 review_router.register('reviews', views.ReviewViewSet, base_name='reviews')
 
-user_router = routers.SimpleRouter()
-user_router.register('users', views.UserViewSet, base_name='users')
-
 talk_router = routers.SimpleRouter()
 talk_router.register('talk', views.TalkViewSet, base_name='talk')
 
@@ -56,7 +53,6 @@ urlpatterns += queue_router.urls
 urlpatterns += register_router.urls
 urlpatterns += report_router.urls
 urlpatterns += review_router.urls
-urlpatterns += user_router.urls
 urlpatterns += talk_router.urls
 urlpatterns += topic_router.urls
 urlpatterns += conversation_starter_router.urls
