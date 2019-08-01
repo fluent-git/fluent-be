@@ -99,5 +99,5 @@ class TalkDetailSerializer(serializers.ModelSerializer):
     talk_id = TalkHistorySerializer()
     class Meta:
         model = Review
-        fields = ('id', 'user', 'clarity', 'pacing',
+        fields = ('clarity', 'pacing',
                   'pronunciation', 'note', 'talk_id')
