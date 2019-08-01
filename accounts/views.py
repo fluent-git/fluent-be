@@ -218,7 +218,7 @@ class QueueViewSet(viewsets.GenericViewSet):
         topic_name = request.data['topic']
         topic = TopicSerializer(Topic.objects.get(name=topic_name)).data
 
-        if topic['is_open']:
+        if not topic['is_open']:
             message = 'ERR_TOPIC'
         elif now >= start and now < end:
             message = 'OK'
