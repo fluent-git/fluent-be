@@ -215,10 +215,10 @@ class QueueViewSet(viewsets.GenericViewSet):
         start = opentime.start
         end = opentime.end
         now = timezone.now().hour
-        topic = request.data['topic']
+        topic_name = request.data['topic']
+        topic = TopicSerializer(Topic.objects.get(name=topic_name)).data
 
-        # TODO : UPDATE TOPIC VALIDATION
-        if topic == 'food':
+        if topic['is_open']:
             message = 'ERR_TOPIC'
         elif now >= start and now < end:
             message = 'OK'
