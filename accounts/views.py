@@ -1,11 +1,12 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
-from django.utils import timezone
 from django.http import JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import generics, mixins, permissions, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
@@ -282,7 +283,7 @@ class TalkViewSet(viewsets.GenericViewSet):
 
     @action(methods=['post'], detail=False)
     def end(self, request):
-        talk_history = TalkHistory.objects.get(id=request.data['talk_id'])
+        talk_history = get_object_or_404(TalkHistory, id=request.data['talk_id'])
         talk_history.end_time = timezone.now()
         talk_history.active = False
         talk_history.save()
@@ -299,9 +300,10 @@ class TalkViewSet(viewsets.GenericViewSet):
     
     @action(methods=['post'], detail=False)
     def talk_detail(self, request):
-        review = Review.objects.get(
+        review = get_object_or_404(
+            Review,
             user=request.data['user_id'],
-            talk_id=request.data['talk_id'],
+            talk_id=request.data['talk_id']
         )
 
         return Response(TalkDetailSerializer(review).data)
@@ -379,10 +381,11 @@ class ConversationStarterViewSet(viewsets.ModelViewSet):
     serializer_class = ConversationStarterSerializer
 
     def create(self, request):
-        try:
-            topic = Topic.objects.get(name=request.data['topic']).id
-        except ObjectDoesNotExist:
-            return Response("Invalid Topic", status=status.HTTP_400_BAD_REQUEST)
+        topic = get_object_or_404(Topic, name=request.data['topic']).id
+        # try:
+        #     topic = Topic.objects.get(name=request.data['topic']).id
+        # except ObjectDoesNotExist:
+        #     return Response("Invalid Topic", status=status.HTTP_404_NOT_FOUND)
         request.data['topic'] = topic
         
         return super().create(request)
