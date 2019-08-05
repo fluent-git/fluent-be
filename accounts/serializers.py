@@ -8,7 +8,8 @@ from accounts.models import (
     TalkHistory,
     OpenTime,
     Topic,
-    ConversationStarter
+    ConversationStarter,
+    Tips
 )
 
 
@@ -83,7 +84,7 @@ class TalkHistorySerializer(serializers.ModelSerializer):
 class ConversationStarterSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConversationStarter
-        fields = ('text', 'topic')
+        fields = ('id', 'text', 'topic')
 
 
 class TopicSerializer(serializers.ModelSerializer):
@@ -97,7 +98,14 @@ class TopicSerializer(serializers.ModelSerializer):
 
 class TalkDetailSerializer(serializers.ModelSerializer):
     talk_id = TalkHistorySerializer()
+
     class Meta:
         model = Review
         fields = ('clarity', 'pacing',
                   'pronunciation', 'note', 'talk_id')
+
+
+class TipsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tips
+        fields = ('id', 'text')

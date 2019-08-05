@@ -29,6 +29,7 @@ from accounts.serializers import (
     OpenTimeSerializer,
     TalkDetailSerializer,
     TopicSerializer,
+    TipsSerializer
 )
 
 from accounts.models import (
@@ -39,7 +40,8 @@ from accounts.models import (
     TalkHistory,
     OpenTime,
     Topic,
-    ConversationStarter
+    ConversationStarter,
+    Tips
 )
 
 
@@ -283,7 +285,8 @@ class TalkViewSet(viewsets.GenericViewSet):
 
     @action(methods=['post'], detail=False)
     def end(self, request):
-        talk_history = get_object_or_404(TalkHistory, id=request.data['talk_id'])
+        talk_history = get_object_or_404(
+            TalkHistory, id=request.data['talk_id'])
         talk_history.end_time = timezone.now()
         talk_history.active = False
         talk_history.save()
@@ -297,7 +300,7 @@ class TalkViewSet(viewsets.GenericViewSet):
         )
 
         return Response(TalkHistorySerializer(talk_history, many=True).data)
-    
+
     @action(methods=['post'], detail=False)
     def talk_detail(self, request):
         review = get_object_or_404(
@@ -340,12 +343,12 @@ class TopicViewSet(viewsets.GenericViewSet):
     def details(self, request):
         topic_name = request.data['topic']
         topic = TopicSerializer(Topic.objects.get(name=topic_name)).data
-        
+
         conversation_starters = []
         for conversation_starter in topic['conversation_starters']:
             conversation_starters.append(conversation_starter['text'])
         topic['conversation_starters'] = conversation_starters
-        
+
         return Response(topic)
 
     # TODO : Fix URLS to be able to get pk (pk not yet defined)
@@ -356,7 +359,7 @@ class TopicViewSet(viewsets.GenericViewSet):
         if 'is_open' in request.data:
             topic.name = request.data['is_open']
         topic.save()
-        
+
         return Response({'message': 'OK'})
 
     @action(methods=['post'], detail=False)
@@ -366,7 +369,7 @@ class TopicViewSet(viewsets.GenericViewSet):
         topic.is_open = True
         topic.save()
         return Response({'message': 'OK'})
-    
+
     @action(methods=['post'], detail=False)
     def close(self, request):
         topic_name = request.data['topic']
@@ -387,12 +390,17 @@ class ConversationStarterViewSet(viewsets.ModelViewSet):
         # except ObjectDoesNotExist:
         #     return Response("Invalid Topic", status=status.HTTP_404_NOT_FOUND)
         request.data['topic'] = topic
-        
+
         return super().create(request)
 
     def patch(self, request, pk):
         conversation_starter = ConversationStarter.objects.get(pk=pk)
         conversation_starter.text = request.data['text']
         conversation_starter.save()
-        
+
         return Response({'message': 'OK'})
+
+
+class TipsViewSet(viewsets.ModelViewSet):
+    queryset = Tips.objects.all()
+    serializer_class = TipsSerializer

@@ -38,8 +38,10 @@ topic_router.register('topics', views.TopicViewSet, base_name='topic')
 
 conversation_starter_router = routers.SimpleRouter()
 conversation_starter_router.register(
-    'conversation-starters', views.ConversationStarterViewSet, base_name='topic')
+    'conversation-starters', views.ConversationStarterViewSet, base_name='conversation_starters')
 
+tips_router = routers.SimpleRouter()
+tips_router.register('tips', views.TipsViewSet, base_name='tips')
 
 urlpatterns = [
     url(r'^analyze/$', views.Analyze.as_view(), name='analyze')
@@ -56,3 +58,4 @@ urlpatterns += review_router.urls
 urlpatterns += talk_router.urls
 urlpatterns += topic_router.urls
 urlpatterns += conversation_starter_router.urls
+urlpatterns += tips_router.urls

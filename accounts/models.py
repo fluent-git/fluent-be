@@ -27,6 +27,12 @@ class Profile(models.Model):
         return self.user.username + ' ' + self.user.email
 
 
+class Queue(models.Model):
+    user = models.IntegerField(default=0, unique=True)
+    peerjs_id = models.TextField(default='')
+    topic = models.TextField(default='')
+
+
 class TalkHistory(models.Model):
     user1 = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='talk_history1')
@@ -39,6 +45,21 @@ class TalkHistory(models.Model):
 
     def get_duration(self):
         return int((self.end_time - self.start_time).total_seconds())
+
+
+class Tips(models.Model):
+    text = models.CharField(max_length=254, default='')
+
+
+class Topic(models.Model):
+    name = models.CharField(max_length=24, blank=False)
+    is_open = models.BooleanField(default=True)
+
+
+class ConversationStarter(models.Model):
+    text = models.CharField(max_length=254, default='')
+    topic = models.ForeignKey(
+        Topic, on_delete=models.CASCADE, related_name='convstarter_topic', default=None)
 
 
 class Report(models.Model):
@@ -59,20 +80,3 @@ class Review(models.Model):
     note = models.TextField(default='', blank=True)
     talk_id = models.ForeignKey(
         TalkHistory, on_delete=models.CASCADE, related_name='review_talk_id', default=None)
-
-
-class Queue(models.Model):
-    user = models.IntegerField(default=0, unique=True)
-    peerjs_id = models.TextField(default='')
-    topic = models.TextField(default='')
-
-
-class Topic(models.Model):
-    name = models.CharField(max_length=24, blank=False)
-    is_open = models.BooleanField(default=True)
-
-
-class ConversationStarter(models.Model):
-    text = models.CharField(max_length=254, default='')
-    topic = models.ForeignKey(
-        Topic, on_delete=models.CASCADE, related_name='convstarter_topic', default=None)
