@@ -1,3 +1,4 @@
+import random
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -343,11 +344,14 @@ class TopicViewSet(viewsets.GenericViewSet):
     def details(self, request):
         topic_name = request.data['topic']
         topic = TopicSerializer(Topic.objects.get(name=topic_name)).data
-        conversation_starters = [conversation_starter['text'] for conversation_starter in topic['conversation_starters']]
+        conversation_starters = [conversation_starter['text']
+                                 for conversation_starter in topic['conversation_starters']]
         topic['conversation_starters'] = conversation_starters
 
         tipsobjects = Tips.objects.all()
-        tips = [TipsSerializer(tipsobject).data['text'] for tipsobject in tipsobjects]
+        tips = [TipsSerializer(tipsobject).data['text']
+                for tipsobject in tipsobjects]
+        random.shuffle(tips)
         topic['tips'] = tips
 
         return Response(topic)
