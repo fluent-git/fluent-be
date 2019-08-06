@@ -346,6 +346,7 @@ class TopicViewSet(viewsets.GenericViewSet):
         topic = TopicSerializer(Topic.objects.get(name=topic_name)).data
         conversation_starters = [conversation_starter['text']
                                  for conversation_starter in topic['conversation_starters']]
+        random.shuffle(conversation_starters)
         topic['conversation_starters'] = conversation_starters
 
         tipsobjects = Tips.objects.all()
