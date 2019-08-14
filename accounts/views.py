@@ -133,7 +133,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
             Q(user1=request.data['user_id']) | Q(
                 user2=request.data['user_id']),
             active=False
-        )
+        ).order_by('-start_time')
 
         reviews = Review.objects.filter(user=request.data['user_id'])
 
@@ -298,7 +298,7 @@ class TalkViewSet(viewsets.GenericViewSet):
     def recent_talk(self, request):
         talk_history = TalkHistory.objects.filter(
             Q(user1=request.data['user_id']) | Q(user2=request.data['user_id'])
-        )
+        ).order_by('-start_time')
 
         return Response(TalkHistorySerializer(talk_history, many=True).data)
 
