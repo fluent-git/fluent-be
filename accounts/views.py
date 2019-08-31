@@ -289,9 +289,12 @@ class TalkViewSet(viewsets.GenericViewSet):
     def end(self, request):
         talk_history = get_object_or_404(
             TalkHistory, id=request.data['talk_id'])
-        talk_history.end_time = timezone.now()
-        talk_history.active = False
-        talk_history.save()
+        
+        if talk_history.active:
+            talk_history.end_time = timezone.now()
+            talk_history.active = False
+            talk_history.is_valid = talk_history.get_duration() >= 60
+            talk_history.save()
 
         return Response({'message': 'OK'})
 
