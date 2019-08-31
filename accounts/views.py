@@ -170,10 +170,10 @@ class QueueViewSet(viewsets.GenericViewSet):
         user_profile = Profile.objects.get(user=user1)
         queues = Queue.objects.filter(topic=topic)
         # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
-
+        
         if len(queues) > 0:
             for queue in queues:
-                if queue.user == user_profile.id:
+                if queue.user == user_profile.user_id:
                     continue
 
                 '''
@@ -193,6 +193,7 @@ class QueueViewSet(viewsets.GenericViewSet):
                     'talk_id': talk.id
                 })
         else:
+            print("HERE")
             queue = Queue.objects.create(
                 user=user_profile.user.id,
                 topic=topic,
