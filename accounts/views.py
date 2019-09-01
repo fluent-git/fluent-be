@@ -302,7 +302,7 @@ class TalkViewSet(viewsets.GenericViewSet):
     def recent_talk(self, request):
         talk_history = TalkHistory.objects.filter(
             Q(user1=request.data['user_id']) | Q(user2=request.data['user_id'])
-        ).order_by('-start_time')
+        ).filter(is_valid=True).order_by('-start_time')
 
         return Response(TalkHistorySerializer(talk_history, many=True).data)
 
