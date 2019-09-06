@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'j47!d($yuxdmo5z@4ua=69e2=)&1=*1xurzrv$*q-z2l#oop=8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DJANGO_ENV = os.environ.get('DJANGO_ENV', 'local')
-# DEBUG = DJANGO_ENV != 'production'
+
+DJANGO_ENV = os.environ.get('DJANGO_ENV', 'local')
+DEBUG = DJANGO_ENV != 'production'
 
 ALLOWED_HOSTS = []
 
@@ -102,6 +102,11 @@ DATABASES = {
     'PASSWORD': 'fluent-db',
     'HOST': 'localhost',
     'PORT': '',
+    }
+} if not DEBUG else {
+    'default':{
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
