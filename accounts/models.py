@@ -47,6 +47,11 @@ class TalkHistory(models.Model):
     def get_duration(self):
         return int((self.end_time - self.start_time).total_seconds())
 
+    def __str__(self):
+        return f"{self.user1} {self.user2} {self.start_time}"
+    class Meta:
+        verbose_name_plural = "Talk Histories"
+
 
 class Tips(models.Model):
     text = models.CharField(max_length=254, default='')
@@ -81,3 +86,5 @@ class Review(models.Model):
     note = models.TextField(default='', blank=True)
     talk_id = models.ForeignKey(
         TalkHistory, on_delete=models.CASCADE, related_name='review_talk_id', default=None)
+    def __str__(self):
+        return f"{self.user} - {self.talk_id}"
