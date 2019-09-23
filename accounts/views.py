@@ -159,6 +159,30 @@ class ProfileViewSet(viewsets.ModelViewSet):
             })
 
 
+# TODO Move this Function
+def inRange(user1,user2,level1,level2):
+    rating1 = Profile.objects.get(user=user1).rating
+    want1 = rating1 if level1==0 else level1*1000
+    rating2 = Profile.objects.get(user=user2).rating 
+    want2 = rating2 if level2==0 else level2*1000
+
+    ttl1 = cache.ttl(f"queue_{user1.id}")
+    ttl2 = cache.ttl(f"queue_{user2.id}")
+
+    if ttl1 is None:
+        ttl1 = 0
+    if ttl2 is None:
+        ttl2 = 0
+    want1lo = want1 - (ttl1//5)*100
+    want1hi = want1 + (ttl1//5)*100
+    want2lo = want2 - (ttl2//5)*100
+    want2hi = want2 + (ttl2//5)*100
+    
+    oneInWant2 = want2lo <= rating1 and rating1 <= want2hi
+    twoInWant1 = want1lo <= rating2 and rating2 <= want1hi
+    return oneInWant2 and twoInWant1
+    
+
 class QueueViewSet(viewsets.GenericViewSet):
     # TODO adjust with peerjs server
     # permission_classes = (permissions.IsAuthenticated,)
@@ -186,21 +210,23 @@ class QueueViewSet(viewsets.GenericViewSet):
                 TODO refactor this code below
                 Function should not have complex bussiness logic
                 '''
+                
                 user2 = User.objects.get(id=int(q_user))
+                if not inRange(user1,user2,int(level), int(q_level)):
+                    continue
                 talk = TalkHistory.objects.create(
                     user1=user1, user2=user2, topic=topic
                 )
                 cache.delete(queue)
-
+                cache.delete(f"queue_{user_profile.user.id}")
                 return Response({
                     'message': 'Found partner to chat',
                     'user_id': int(q_user),
                     'peerjs_id': int(q_peerjs),
                     'talk_id': talk.id
                 })
-        else:
-            print("HERE")
-            cache.set(f"queue_{user_profile.user.id}",f"{topic}_{request.data['peerjs_id']}_{level}",timeout=QUEUE_TIMEOUT)
+        print("HERE")
+        cache.set(f"queue_{user_profile.user.id}",f"{topic}_{request.data['peerjs_id']}_{level}",timeout=QUEUE_TIMEOUT)
 
         return Response({'message': 'Queuing'})
 
