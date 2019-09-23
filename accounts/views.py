@@ -170,12 +170,14 @@ class QueueViewSet(viewsets.GenericViewSet):
         topic = request.data['topic']
         user1 = User.objects.get(id=request.data['user_id'])
         user_profile = Profile.objects.get(user=user1)
+        level = request.data['level']
         queues = cache.keys("queue_*")
         # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
         
         if len(queues) > 0:
             for queue in queues:
-                _,q_user,q_topic,q_peerjs = queue.split('_') 
+                _,q_user = queue.split('_') 
+                q_topic,q_peerjs,q_level = cache.get(queue).split("_")
                 
                 if int(q_user) == user_profile.user_id:
                     continue
@@ -198,7 +200,7 @@ class QueueViewSet(viewsets.GenericViewSet):
                 })
         else:
             print("HERE")
-            cache.set(f"queue_{user_profile.user.id}_{topic}_{request.data['peerjs_id']}","",timeout=QUEUE_TIMEOUT)
+            cache.set(f"queue_{user_profile.user.id}",f"{topic}_{request.data['peerjs_id']}_{level}",timeout=QUEUE_TIMEOUT)
 
         return Response({'message': 'Queuing'})
 
@@ -209,7 +211,7 @@ class QueueViewSet(viewsets.GenericViewSet):
         user_id = request.data['user_id']
 
         for queue in queues:
-            _,q_user,q_topic,q_peerjs = queue.split('_') 
+            _,q_user = queue.split('_') 
             if int(q_user) == user_id:
                 cache.delete(queue)
                 break
@@ -243,7 +245,8 @@ class QueueViewSet(viewsets.GenericViewSet):
         queues = cache.keys("queue_*")
         res_queues = []
         for queue in queues:
-            _,q_user,q_topic,q_peerjs = queue.split('_') 
+            _,q_user = queue.split('_') 
+            q_topic,q_peerjs,q_level = cache.get(queue).split("_") 
             res_queues.append(Queue(user=int(q_user),topic=int(q_topic),peerjs_id=int(q_peerjs)))
         return Response(QueueSerializer(res_queues, many=True).data)
 
