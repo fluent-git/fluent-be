@@ -16,6 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from accounts.analyze import analyze
 from django.core.cache import cache 
+from accounts.constants import QUEUE_TIMEOUT
 
 from fluent.settings import CHAT_MAKING_QUEUE
 
@@ -197,7 +198,7 @@ class QueueViewSet(viewsets.GenericViewSet):
                 })
         else:
             print("HERE")
-            cache.set(f"queue_{user_profile.user.id}_{topic}_{request.data['peerjs_id']}","",timeout=600)
+            cache.set(f"queue_{user_profile.user.id}_{topic}_{request.data['peerjs_id']}","",timeout=QUEUE_TIMEOUT)
 
         return Response({'message': 'Queuing'})
 
