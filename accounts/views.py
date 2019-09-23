@@ -15,6 +15,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from accounts.analyze import analyze
+from django.core.cache import cache 
 
 from fluent.settings import CHAT_MAKING_QUEUE
 
@@ -168,49 +169,48 @@ class QueueViewSet(viewsets.GenericViewSet):
         topic = request.data['topic']
         user1 = User.objects.get(id=request.data['user_id'])
         user_profile = Profile.objects.get(user=user1)
-        queues = Queue.objects.filter(topic=topic)
+        queues = cache.keys("queue_*")
         # user_profile = Profile.objects.get(user=request.user) // use this when using authorization token
         
         if len(queues) > 0:
             for queue in queues:
-                if queue.user == user_profile.user_id:
+                _,q_user,q_topic,q_peerjs = queue.split('_') 
+                
+                if int(q_user) == user_profile.user_id:
                     continue
 
                 '''
                 TODO refactor this code below
                 Function should not have complex bussiness logic
                 '''
-                user2 = User.objects.get(id=queue.user)
+                user2 = User.objects.get(id=int(q_user))
                 talk = TalkHistory.objects.create(
                     user1=user1, user2=user2, topic=topic
                 )
-                queue.delete()
+                cache.delete(queue)
 
                 return Response({
                     'message': 'Found partner to chat',
-                    'user_id': queue.user,
-                    'peerjs_id': queue.peerjs_id,
+                    'user_id': int(q_user),
+                    'peerjs_id': int(q_peerjs),
                     'talk_id': talk.id
                 })
         else:
             print("HERE")
-            queue = Queue.objects.create(
-                user=user_profile.user.id,
-                topic=topic,
-                peerjs_id=request.data['peerjs_id']
-            )
+            cache.set(f"queue_{user_profile.user.id}_{topic}_{request.data['peerjs_id']}","",timeout=600)
 
         return Response({'message': 'Queuing'})
 
     @action(methods=['post'], detail=False)
     def cancel(self, request):
-        queues = Queue.objects.all()
+        queues = cache.keys("queue_*")
         # user_id = request.user.id // user this when using authorization token
         user_id = request.data['user_id']
 
         for queue in queues:
-            if queue.user == user_id:
-                queue.delete()
+            _,q_user,q_topic,q_peerjs = queue.split('_') 
+            if int(q_user) == user_id:
+                cache.delete(queue)
                 break
 
         return Response({'message': 'OK'})
@@ -239,16 +239,19 @@ class QueueViewSet(viewsets.GenericViewSet):
 
     @action(methods=['get'], detail=False)
     def print(self, request):
-        queues = Queue.objects.all()
-        return Response(QueueSerializer(queues, many=True).data)
+        queues = cache.keys("queue_*")
+        res_queues = []
+        for queue in queues:
+            _,q_user,q_topic,q_peerjs = queue.split('_') 
+            res_queues.append(Queue(user=int(q_user),topic=int(q_topic),peerjs_id=int(q_peerjs)))
+        return Response(QueueSerializer(res_queues, many=True).data)
 
     @action(methods=['post'], detail=False)
     def reset(self, request):
-        queues = Queue.objects.all()
+        queues = cache.keys("queue_*")
 
         for queue in queues:
-            queue.delete()
-
+            cache.delete(queue)
         return Response({'message': 'OK'})
 
 
