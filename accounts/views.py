@@ -135,7 +135,11 @@ class ProfileViewSet(viewsets.ModelViewSet):
             active=False
         ).order_by('-start_time')
 
-        reviews = Review.objects.filter(user=request.data['user_id'])
+        raw_reviews = Review.objects.filter(user=request.data['user_id'])
+        reviews = []
+        for review in raw_reviews:
+            if len(Review.objects.filter(talk_id=review.talk_id))==2:
+                reviews.append(review)
 
         if len(reviews) == 0:
             return Response({
@@ -258,10 +262,37 @@ class ReportViewSet(viewsets.ModelViewSet):
     serializer_class = ReportSerializer
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(viewsets.GenericViewSet):
     # permission_classes = (permissions.IsAuthenticated,)
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    def create(self, request):
+        talk_history = get_object_or_404(TalkHistory, id=request.data['talk_id'])
+        user = get_object_or_404(User, id=request.data['user'])
+        if len(Review.objects.filter(user=user, talk_id=talk_history))>0:
+            return Response({
+                'message': 'Review already exists'
+            })
+        if not (talk_history.user1 == user or talk_history == user):
+            return Response({
+                'message': 'User not in talk'
+            })
+        if talk_history.is_valid:
+            review = Review.objects.create(
+                user=user,
+                clarity=request.data['clarity'],
+                pacing=request.data['pacing'],
+                pronunciation=request.data['pronunciation'],
+                note=request.data['note'],
+                talk_id=talk_history
+            )
+            review.save()
+            return Response({
+                'message':'OK'
+            })
+        return Response({
+            'message': 'Talk is not valid',
+        })
 
 
 class TalkViewSet(viewsets.GenericViewSet):

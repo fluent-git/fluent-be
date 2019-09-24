@@ -75,6 +75,8 @@ class Report(models.Model):
     note = models.TextField(default='', blank=True)
     talk_id = models.ForeignKey(
         TalkHistory, on_delete=models.CASCADE, related_name='report_talk_id', default=None)
+    class Meta:
+        unique_together = ('user','talk_id')
 
 
 class Review(models.Model):
