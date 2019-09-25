@@ -18,6 +18,10 @@ from accounts.analyze import analyze
 
 from fluent.settings import CHAT_MAKING_QUEUE
 
+
+from accounts.constants import (
+    BASE_REVIEW,
+)
 from accounts.serializers import (
     ConversationStarterSerializer,
     ProfileSerializer,
@@ -32,7 +36,6 @@ from accounts.serializers import (
     TopicSerializer,
     TipsSerializer
 )
-
 from accounts.models import (
     Profile,
     Queue,
@@ -197,7 +200,6 @@ class QueueViewSet(viewsets.GenericViewSet):
                     'talk_id': talk.id
                 })
         else:
-            print("HERE")
             queue = Queue.objects.create(
                 user=user_profile.user.id,
                 topic=topic,
@@ -266,17 +268,21 @@ class ReviewViewSet(viewsets.GenericViewSet):
     # permission_classes = (permissions.IsAuthenticated,)
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
     def create(self, request):
         talk_history = get_object_or_404(TalkHistory, id=request.data['talk_id'])
         user = get_object_or_404(User, id=request.data['user'])
-        if len(Review.objects.filter(user=user, talk_id=talk_history))>0:
+
+        if len(Review.objects.filter(user=user, talk_id=talk_history)) > 0:
             return Response({
                 'message': 'Review already exists'
             })
-        if not (talk_history.user1 == user or talk_history == user):
+
+        if not (talk_history.user1 == user or talk_history.user2 == user):
             return Response({
                 'message': 'User not in talk'
             })
+
         if talk_history.is_valid:
             review = Review.objects.create(
                 user=user,
@@ -286,13 +292,28 @@ class ReviewViewSet(viewsets.GenericViewSet):
                 note=request.data['note'],
                 talk_id=talk_history
             )
+            
             review.save()
+            self.applyRating(request)
+
             return Response({
                 'message':'OK'
             })
+
         return Response({
             'message': 'Talk is not valid',
         })
+    
+    def applyRating(self, request):
+        user = get_object_or_404(User, id=request.data['user'])
+        user_profile = get_object_or_404(Profile, user=user)
+
+        new_rating = user_profile.rating
+        new_rating = new_rating + (request.data['clarity'] - BASE_REVIEW)*5 + (request.data['pacing'] - BASE_REVIEW)*5 + (request.data['pronunciation'] - BASE_REVIEW)*5
+        new_rating = new_rating - random.randint(-5, 5) # adjustment
+
+        user_profile.rating = new_rating
+        user_profile.save()
 
 
 class TalkViewSet(viewsets.GenericViewSet):
