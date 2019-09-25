@@ -269,6 +269,7 @@ class ReviewViewSet(viewsets.GenericViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
+    @transaction.atomic
     def create(self, request):
         talk_history = get_object_or_404(TalkHistory, id=request.data['talk_id'])
         user = get_object_or_404(User, id=request.data['user'])
