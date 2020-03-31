@@ -155,9 +155,9 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
             return Response({
                 'talk_count': len(talk_history),
-                'clarity': clarity / len(reviews),
-                'pacing': pacing / len(reviews),
-                'pronunciation': pronunciation / len(reviews)
+                'clarity': "{:.2f}".format(clarity / len(reviews)),
+                'pacing': "{:.2f}".format(pacing / len(reviews)),
+                'pronunciation': "{:.2f}".format(pronunciation / len(reviews))
             })
 
 
