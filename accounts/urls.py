@@ -6,42 +6,42 @@ from accounts import views
 
 
 login_router = routers.SimpleRouter()
-login_router.register('login', views.LoginView, base_name='login')
+login_router.register('login', views.LoginView, basename='login')
 
 logout_router = routers.SimpleRouter()
-logout_router.register('logout', views.LogoutView, base_name='logout')
+logout_router.register('logout', views.LogoutView, basename='logout')
 
 opentime_router = routers.SimpleRouter()
 opentime_router.register(
-    'opentime', views.OpenTimeViewSet, base_name='opentime')
+    'opentime', views.OpenTimeViewSet, basename='opentime')
 
 profile_router = routers.SimpleRouter()
-profile_router.register('profiles', views.ProfileViewSet, base_name='profiles')
+profile_router.register('profiles', views.ProfileViewSet, basename='profiles')
 
 queue_router = routers.SimpleRouter()
-queue_router.register('queue', views.QueueViewSet, base_name='queue')
+queue_router.register('queue', views.QueueViewSet, basename='queue')
 
 register_router = routers.SimpleRouter()
-register_router.register('register', views.RegisterView, base_name='register')
+register_router.register('register', views.RegisterView, basename='register')
 
 report_router = routers.SimpleRouter()
-report_router.register('reports', views.ReportViewSet, base_name='reports')
+report_router.register('reports', views.ReportViewSet, basename='reports')
 
 review_router = routers.SimpleRouter()
-review_router.register('reviews', views.ReviewViewSet, base_name='reviews')
+review_router.register('reviews', views.ReviewViewSet, basename='reviews')
 
 talk_router = routers.SimpleRouter()
-talk_router.register('talk', views.TalkViewSet, base_name='talk')
+talk_router.register('talk', views.TalkViewSet, basename='talk')
 
 topic_router = routers.SimpleRouter()
-topic_router.register('topics', views.TopicViewSet, base_name='topic')
+topic_router.register('topics', views.TopicViewSet, basename='topic')
 
 conversation_starter_router = routers.SimpleRouter()
 conversation_starter_router.register(
-    'conversation-starters', views.ConversationStarterViewSet, base_name='conversation_starters')
+    'conversation-starters', views.ConversationStarterViewSet, basename='conversation_starters')
 
 tips_router = routers.SimpleRouter()
-tips_router.register('tips', views.TipsViewSet, base_name='tips')
+tips_router.register('tips', views.TipsViewSet, basename='tips')
 
 urlpatterns = [
     url(r'^analyze/$', views.Analyze.as_view(), name='analyze')

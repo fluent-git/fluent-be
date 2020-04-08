@@ -4,3 +4,4 @@ django-rest-swagger
 drf-nested-routers
 django-rest-framework-nested
 django-cors-headers
+channels

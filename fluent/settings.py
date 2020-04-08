@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'accounts.apps.AccountsConfig',
     'corsheaders',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -89,7 +90,7 @@ TEMPLATES = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 WSGI_APPLICATION = 'fluent.wsgi.application'
-
+ASGI_APPLICATION = "fluent.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
